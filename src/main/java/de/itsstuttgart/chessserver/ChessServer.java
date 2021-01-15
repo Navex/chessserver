@@ -4,6 +4,7 @@ import de.itsstuttgart.chessserver.clients.ChessClient;
 import de.itsstuttgart.chessserver.packet.PacketHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,13 +14,10 @@ import java.util.List;
 /**
  * created by paul on 15.01.21 at 18:50
  */
+@Service
 public class ChessServer {
 
     private static final Logger logger = LogManager.getLogger();
-
-    public static void main(String[] args) throws IOException {
-        new ChessServer(53729);
-    }
 
     private final ServerSocket socket;
     private final ConnectionListener listener;
@@ -32,10 +30,9 @@ public class ChessServer {
     /**
      * Creates a new chess server on the specified port
      *
-     * @param port port to listen on
      * @throws IOException any exceptions (port not available, insufficient permissions...)
      */
-    public ChessServer(int port) throws IOException {
+    public ChessServer() throws IOException {
         logger.info("Starting chess server...");
 
         // Mark server as running
@@ -44,10 +41,10 @@ public class ChessServer {
         this.connectedClients = new ArrayList<>();
         this.packetHandler = new PacketHandler();
 
-        this.socket = new ServerSocket(port);
+        this.socket = new ServerSocket(53729);
         this.listener = new ConnectionListener(this);
 
-        logger.info("Now listening on port {}", port);
+        logger.info("Now listening on port {}", 53729);
     }
 
     public ServerSocket getSocket() {
