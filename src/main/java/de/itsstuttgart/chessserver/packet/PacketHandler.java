@@ -1,6 +1,7 @@
 package de.itsstuttgart.chessserver.packet;
 
 import de.itsstuttgart.chessserver.clients.ChessClient;
+import de.itsstuttgart.chessserver.packet.packets.ChallengePacket;
 import de.itsstuttgart.chessserver.packet.packets.LoginPacket;
 import de.itsstuttgart.chessserver.packet.packets.PingPacket;
 import de.itsstuttgart.chessserver.packet.packets.RegisterPacket;
@@ -20,6 +21,7 @@ public class PacketHandler {
         this.processablePackets.add(new PingPacket());
         this.processablePackets.add(new RegisterPacket());
         this.processablePackets.add(new LoginPacket());
+        this.processablePackets.add(new ChallengePacket());
     }
 
     public List<Packet> getProcessablePackets() {
@@ -31,10 +33,10 @@ public class PacketHandler {
             byte[] header = p.getClass().getAnnotation(PacketHeader.class).value();
 
             if (packet.length >= header.length) {
-                boolean validPacket = false;
+                boolean validPacket = true;
                 for (int i = 0; i < header.length; i++) {
-                    if (header[i] == packet[i]) {
-                        validPacket = true;
+                    if (header[i] != packet[i]) {
+                        validPacket = false;
                         break;
                     }
                 }

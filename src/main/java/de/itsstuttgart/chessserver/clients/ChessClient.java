@@ -30,6 +30,7 @@ public class ChessClient implements Runnable {
     private BufferedOutputStream outputStream;
 
     private UserModel userModel;
+    private boolean inGame;
 
     public ChessClient(ChessServer server, Socket socket) {
         SecureRandom xorSecretRandom = new SecureRandom();
@@ -85,10 +86,12 @@ public class ChessClient implements Runnable {
                     xorPacket[i] = (byte) (packet[i] ^ this.xorSecret);
                 }
 
+                System.out.println(this.getClientIdentifier() + ": " + ByteUtils.bytesToHex(xorPacket));
                 // Ignore empty packets
                 if (packet.length > 0) {
                     this.server.getPacketHandler().processPacket(xorPacket, this);
                 }
+
             }
         } catch (Exception e) {
             // if any actual exception occurs, just disconnect the client, it's fine
@@ -144,6 +147,10 @@ public class ChessClient implements Runnable {
 
     public void setLoggedIn(UserModel userModel) {
         this.userModel = userModel;
+        this.getServer().getConnectedClients()
+                .stream()
+                .filter(ChessClient::isLoggedIn)
+                .forEach(ChessClient::sendListPing);
     }
 
     public boolean isLoggedIn() {
@@ -152,5 +159,46 @@ public class ChessClient implements Runnable {
 
     public UserModel getUserModel() {
         return userModel;
+    }
+
+    public boolean isInGame() {
+        return inGame;
+    }
+
+    public UUID getClientIdentifier() {
+        return clientIdentifier;
+    }
+
+    @SuppressWarnings("PointlessBitwiseExpression")
+    public void sendListPing() {int size = 2;
+        size += DataType.getSize(DataType.INTEGER);
+        for (ChessClient model : this.getServer().getConnectedClients()) {
+            if (model.isLoggedIn()) {
+                size += DataType.getSize(DataType.LONG);
+                size += DataType.getSize(DataType.LONG);
+
+                size += DataType.getSize(DataType.SHORT);
+                size += model.getUserModel().getUsername().length();
+                size += DataType.getSize(DataType.BYTE);
+            }
+        }
+        byte[] ping = new byte[size];
+        int pointer = 0;
+        pointer = ByteUtils.writeBytes(ping, pointer, (byte)0x2d);
+        pointer = ByteUtils.writeBytes(ping, pointer, (byte)0x2d);
+        pointer = ByteUtils.writeBytes(ping, pointer, (int)this.getServer().getConnectedClients().stream().filter(ChessClient::isLoggedIn).count());
+        for (ChessClient model : this.getServer().getConnectedClients()) {
+            if (model.isLoggedIn()) {
+                pointer = ByteUtils.writeBytes(ping, pointer, model.getClientIdentifier().getMostSignificantBits());
+                pointer = ByteUtils.writeBytes(ping, pointer, model.getClientIdentifier().getLeastSignificantBits());
+
+                pointer = ByteUtils.writeBytes(ping, pointer, model.getUserModel().getUsername());
+                byte flags = 0x00;
+                flags |= (model.isInGame() ? 1 : 0)     << 0;   // ingame
+                flags |= (model.equals(this) ? 1 : 0)   << 1;   // self
+                pointer = ByteUtils.writeBytes(ping, pointer, flags);
+            }
+        }
+        this.send(ping);
     }
 }
