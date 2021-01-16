@@ -3,6 +3,7 @@ package de.itsstuttgart.chessserver.clients;
 import de.itsstuttgart.chessserver.ChessServer;
 import de.itsstuttgart.chessserver.util.ByteUtils;
 import de.itsstuttgart.chessserver.util.DataType;
+import de.itsstuttgart.chessserver.util.model.UserModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +28,8 @@ public class ChessClient implements Runnable {
 
     private BufferedInputStream inputStream;
     private BufferedOutputStream outputStream;
+
+    private UserModel userModel;
 
     public ChessClient(ChessServer server, Socket socket) {
         SecureRandom xorSecretRandom = new SecureRandom();
@@ -135,4 +138,19 @@ public class ChessClient implements Runnable {
         }
     }
 
+    public ChessServer getServer() {
+        return server;
+    }
+
+    public void setLoggedIn(UserModel userModel) {
+        this.userModel = userModel;
+    }
+
+    public boolean isLoggedIn() {
+        return this.userModel != null;
+    }
+
+    public UserModel getUserModel() {
+        return userModel;
+    }
 }

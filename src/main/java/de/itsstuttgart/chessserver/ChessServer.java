@@ -2,6 +2,7 @@ package de.itsstuttgart.chessserver;
 
 import de.itsstuttgart.chessserver.clients.ChessClient;
 import de.itsstuttgart.chessserver.packet.PacketHandler;
+import de.itsstuttgart.chessserver.util.repositories.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,14 @@ public class ChessServer {
     private PacketHandler packetHandler;
 
     private boolean running;
+    private UserRepository userRepository;
 
     /**
      * Creates a new chess server on the specified port
      *
      * @throws IOException any exceptions (port not available, insufficient permissions...)
      */
-    public ChessServer() throws IOException {
+    public ChessServer(UserRepository userRepository) throws IOException {
         logger.info("Starting chess server...");
 
         // Mark server as running
@@ -40,6 +42,7 @@ public class ChessServer {
 
         this.connectedClients = new ArrayList<>();
         this.packetHandler = new PacketHandler();
+        this.userRepository = userRepository;
 
         this.socket = new ServerSocket(53729);
         this.listener = new ConnectionListener(this);
@@ -70,6 +73,10 @@ public class ChessServer {
 
     public PacketHandler getPacketHandler() {
         return packetHandler;
+    }
+
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 
     public void shutdown() {
