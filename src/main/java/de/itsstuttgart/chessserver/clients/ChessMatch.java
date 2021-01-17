@@ -80,11 +80,11 @@ public class ChessMatch {
     public void finish(ChessClient winner, byte reason, String fen) {
         if (winner == null) {
             this.white.getUserModel().setDraws(this.white.getUserModel().getDraws() + 1);
-            this.white.getUserModel().getPastGames().add(new HistoryGame(fen, true, reason));
+            this.white.getUserModel().getPastGames().add(new HistoryGame(this.getMatchIdentifier(), fen, true, reason, true));
             this.white.getServer().getUserRepository().save(this.white.getUserModel());
 
             this.black.getUserModel().setDraws(this.black.getUserModel().getDraws() + 1);
-            this.black.getUserModel().getPastGames().add(new HistoryGame(fen, true, reason));
+            this.black.getUserModel().getPastGames().add(new HistoryGame(this.getMatchIdentifier(), fen, true, reason, false));
             this.black.getServer().getUserRepository().save(this.black.getUserModel());
 
             this.sendBoth(new byte[] {0x2a, 0x66, 0x2, reason});
@@ -97,13 +97,13 @@ public class ChessMatch {
         ChessClient looser = getOpponent(winner);
         // add the win
         winner.getUserModel().setWins(winner.getUserModel().getWins() + 1);
-        winner.getUserModel().getPastGames().add(new HistoryGame(fen, true, reason));
+        winner.getUserModel().getPastGames().add(new HistoryGame(this.getMatchIdentifier(), fen, true, reason, winner.equals(this.white)));
         winner.getServer().getUserRepository().save(winner.getUserModel());
         winner.send(new byte[] {0x2a, 0x66, 0x0, reason});
 
         // add the loose
         looser.getUserModel().setLooses(looser.getUserModel().getDraws() + 1);
-        winner.getUserModel().getPastGames().add(new HistoryGame(fen, false, reason));
+        looser.getUserModel().getPastGames().add(new HistoryGame(this.getMatchIdentifier(), fen, false, reason, looser.equals(this.white)));
         looser.getServer().getUserRepository().save(looser.getUserModel());
         looser.send(new byte[] {0x2a, 0x66, 0x1, reason});
 

@@ -1,23 +1,37 @@
 package de.itsstuttgart.chessserver.util.model;
 
+import java.util.UUID;
+
 /**
  * created by paul on 17.01.21 at 21:29
  */
 public class HistoryGame {
 
+    private UUID matchIdentifier;
     private String fen;
     private long gameEnd;
     private boolean win;
     private byte finishReason;
+    private boolean playedWhite;
 
     public HistoryGame() {
     }
 
-    public HistoryGame(String fen, boolean win, byte finishReason) {
+    public HistoryGame(UUID matchIdentifier, String fen, boolean win, byte finishReason, boolean playedWhite) {
+        this.matchIdentifier = matchIdentifier;
         this.fen = fen;
         this.gameEnd = System.currentTimeMillis();
         this.win = win;
         this.finishReason = finishReason;
+        this.playedWhite = playedWhite;
+    }
+
+    public UUID getMatchIdentifier() {
+        return matchIdentifier;
+    }
+
+    public void setMatchIdentifier(UUID matchIdentifier) {
+        this.matchIdentifier = matchIdentifier;
     }
 
     public String getFen() {
@@ -50,5 +64,13 @@ public class HistoryGame {
 
     public void setFinishReason(byte finishReason) {
         this.finishReason = finishReason;
+    }
+
+    public boolean hasPlayedWhite() {
+        return playedWhite;
+    }
+
+    public void setPlayedWhite(boolean playedWhite) {
+        this.playedWhite = playedWhite;
     }
 }
