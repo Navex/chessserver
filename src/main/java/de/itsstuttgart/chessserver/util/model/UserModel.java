@@ -29,6 +29,8 @@ public class UserModel {
     private int looses;
     private int draws;
 
+    private String theme;
+
     public UserModel() {
     }
 
@@ -55,13 +57,15 @@ public class UserModel {
         this.hash = hash;
     }
 
-    public UserModel(String username, byte[] salt, byte[] hash, int wins, int looses, int draws) {
+    public UserModel(String id, String username, byte[] salt, byte[] hash, int wins, int looses, int draws, String theme) {
+        this.id = id;
         this.username = username;
         this.salt = salt;
         this.hash = hash;
         this.wins = wins;
         this.looses = looses;
         this.draws = draws;
+        this.theme = theme;
     }
 
     public boolean checkPassword(String password) {
@@ -124,5 +128,13 @@ public class UserModel {
 
     public void setDraws(int draws) {
         this.draws = draws;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 }

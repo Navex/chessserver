@@ -29,10 +29,12 @@ public class LoginPacket implements Packet {
             UserModel user = client.getServer().getUserRepository().findByUsername(username);
             if (user.checkPassword(password)) {
                 client.setLoggedIn(user);
-                byte[] ls = new byte[2 + DataType.getSize(DataType.SHORT) + user.getUsername().length()];
+                String theme = user.getTheme() == null ? "lichess" : user.getTheme();
+                byte[] ls = new byte[2 + DataType.getSize(DataType.SHORT) + user.getUsername().length() + DataType.getSize(DataType.SHORT) + theme.length()];
                 ls[0] = 0x6c;
                 ls[1] = 0x73;
                 ByteUtils.writeBytes(ls, 2, user.getUsername());
+                ByteUtils.writeBytes(ls, 4 + user.getUsername().length(), theme);
                 client.send(ls);
             } else {
                 client.send(new byte[]{0x61, 0x6c, 0x01});
