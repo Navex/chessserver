@@ -1,10 +1,9 @@
 package de.itsstuttgart.chessserver.packet;
 
 import de.itsstuttgart.chessserver.clients.ChessClient;
-import de.itsstuttgart.chessserver.packet.packets.ChallengePacket;
-import de.itsstuttgart.chessserver.packet.packets.LoginPacket;
-import de.itsstuttgart.chessserver.packet.packets.PingPacket;
-import de.itsstuttgart.chessserver.packet.packets.RegisterPacket;
+import de.itsstuttgart.chessserver.packet.packets.*;
+import de.itsstuttgart.chessserver.packet.packets.board.BoardFinishPacket;
+import de.itsstuttgart.chessserver.packet.packets.board.BoardMovePacket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,11 @@ public class PacketHandler {
         this.processablePackets.add(new RegisterPacket());
         this.processablePackets.add(new LoginPacket());
         this.processablePackets.add(new ChallengePacket());
+        this.processablePackets.add(new ChallengeResponsePacket());
+
+        // Board Packets
+        this.processablePackets.add(new BoardMovePacket());
+        this.processablePackets.add(new BoardFinishPacket());
     }
 
     public List<Packet> getProcessablePackets() {

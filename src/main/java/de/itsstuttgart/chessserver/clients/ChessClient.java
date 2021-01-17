@@ -30,7 +30,7 @@ public class ChessClient implements Runnable {
     private BufferedOutputStream outputStream;
 
     private UserModel userModel;
-    private boolean inGame;
+    private ChessMatch currentMatch;
 
     public ChessClient(ChessServer server, Socket socket) {
         SecureRandom xorSecretRandom = new SecureRandom();
@@ -86,7 +86,6 @@ public class ChessClient implements Runnable {
                     xorPacket[i] = (byte) (packet[i] ^ this.xorSecret);
                 }
 
-                System.out.println(this.getClientIdentifier() + ": " + ByteUtils.bytesToHex(xorPacket));
                 // Ignore empty packets
                 if (packet.length > 0) {
                     this.server.getPacketHandler().processPacket(xorPacket, this);
@@ -162,7 +161,15 @@ public class ChessClient implements Runnable {
     }
 
     public boolean isInGame() {
-        return inGame;
+        return this.currentMatch != null;
+    }
+
+    public ChessMatch getCurrentMatch() {
+        return currentMatch;
+    }
+
+    public void setCurrentMatch(ChessMatch currentMatch) {
+        this.currentMatch = currentMatch;
     }
 
     public UUID getClientIdentifier() {

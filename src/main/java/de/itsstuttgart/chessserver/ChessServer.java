@@ -1,6 +1,7 @@
 package de.itsstuttgart.chessserver;
 
 import de.itsstuttgart.chessserver.clients.ChessClient;
+import de.itsstuttgart.chessserver.clients.ChessMatch;
 import de.itsstuttgart.chessserver.packet.PacketHandler;
 import de.itsstuttgart.chessserver.util.repositories.UserRepository;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * created by paul on 15.01.21 at 18:50
@@ -21,13 +23,12 @@ public class ChessServer {
     private static final Logger logger = LogManager.getLogger();
 
     private final ServerSocket socket;
-    private final ConnectionListener listener;
 
-    private List<ChessClient> connectedClients;
-    private PacketHandler packetHandler;
+    private final List<ChessClient> connectedClients;
+    private final PacketHandler packetHandler;
 
     private boolean running;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     /**
      * Creates a new chess server on the specified port
@@ -45,17 +46,13 @@ public class ChessServer {
         this.userRepository = userRepository;
 
         this.socket = new ServerSocket(53729);
-        this.listener = new ConnectionListener(this);
+        new ConnectionListener(this);
 
         logger.info("Now listening on port {}", 53729);
     }
 
     public ServerSocket getSocket() {
         return socket;
-    }
-
-    public ConnectionListener getListener() {
-        return listener;
     }
 
     /**
@@ -77,6 +74,14 @@ public class ChessServer {
 
     public UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    public ChessMatch findMatchByIdentifier(UUID matchIdentifier) {
+        return this.getConnectedClients().stream()
+                .filter(c -> c.isInGame()
+                        && c.getCurrentMatch().getMatchIdentifier().equals(matchIdentifier))
+                .map(ChessClient::getCurrentMatch)
+                .findFirst().orElse(null);
     }
 
     public void shutdown() {

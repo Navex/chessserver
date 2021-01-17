@@ -25,6 +25,10 @@ public class UserModel {
     private byte[] salt;
     private byte[] hash;
 
+    private int wins;
+    private int looses;
+    private int draws;
+
     public UserModel() {
     }
 
@@ -49,6 +53,15 @@ public class UserModel {
         this.username = username;
         this.salt = salt;
         this.hash = hash;
+    }
+
+    public UserModel(String username, byte[] salt, byte[] hash, int wins, int looses, int draws) {
+        this.username = username;
+        this.salt = salt;
+        this.hash = hash;
+        this.wins = wins;
+        this.looses = looses;
+        this.draws = draws;
     }
 
     public boolean checkPassword(String password) {
@@ -87,5 +100,29 @@ public class UserModel {
 
     public void setHash(byte[] hash) {
         this.hash = hash;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLooses() {
+        return looses;
+    }
+
+    public void setLooses(int looses) {
+        this.looses = looses;
+    }
+
+    public int getDraws() {
+        return draws;
+    }
+
+    public void setDraws(int draws) {
+        this.draws = draws;
     }
 }
