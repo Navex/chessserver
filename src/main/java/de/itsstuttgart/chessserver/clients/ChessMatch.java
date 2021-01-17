@@ -102,7 +102,7 @@ public class ChessMatch {
         winner.send(new byte[] {0x2a, 0x66, 0x0, reason});
 
         // add the loose
-        looser.getUserModel().setLooses(looser.getUserModel().getDraws() + 1);
+        looser.getUserModel().setLooses(looser.getUserModel().getLooses() + 1);
         looser.getUserModel().getPastGames().add(new HistoryGame(this.getMatchIdentifier(), fen, false, reason, looser.equals(this.white)));
         looser.getServer().getUserRepository().save(looser.getUserModel());
         looser.send(new byte[] {0x2a, 0x66, 0x1, reason});
