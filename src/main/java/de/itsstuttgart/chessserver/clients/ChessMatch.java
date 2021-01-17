@@ -2,6 +2,7 @@ package de.itsstuttgart.chessserver.clients;
 
 import de.itsstuttgart.chessserver.util.ByteUtils;
 import de.itsstuttgart.chessserver.util.DataType;
+import de.itsstuttgart.chessserver.util.model.HistoryGame;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,13 +75,18 @@ public class ChessMatch {
      * Ends the game with given winner, use null as draw
      *
      * @param winner who to award
+     * @param fen Forsyth Edwards Notation
      */
-    public void finish(ChessClient winner, byte reason) {
+    public void finish(ChessClient winner, byte reason, String fen) {
         if (winner == null) {
             this.white.getUserModel().setDraws(this.white.getUserModel().getDraws() + 1);
+            this.white.getUserModel().getPastGames().add(new HistoryGame(fen, true, reason));
             this.white.getServer().getUserRepository().save(this.white.getUserModel());
+
             this.black.getUserModel().setDraws(this.black.getUserModel().getDraws() + 1);
+            this.black.getUserModel().getPastGames().add(new HistoryGame(fen, true, reason));
             this.black.getServer().getUserRepository().save(this.black.getUserModel());
+
             this.sendBoth(new byte[] {0x2a, 0x66, 0x2, reason});
 
             this.white.setCurrentMatch(null);
@@ -91,11 +97,13 @@ public class ChessMatch {
         ChessClient looser = getOpponent(winner);
         // add the win
         winner.getUserModel().setWins(winner.getUserModel().getWins() + 1);
+        winner.getUserModel().getPastGames().add(new HistoryGame(fen, true, reason));
         winner.getServer().getUserRepository().save(winner.getUserModel());
         winner.send(new byte[] {0x2a, 0x66, 0x0, reason});
 
         // add the loose
         looser.getUserModel().setLooses(looser.getUserModel().getDraws() + 1);
+        winner.getUserModel().getPastGames().add(new HistoryGame(fen, false, reason));
         looser.getServer().getUserRepository().save(looser.getUserModel());
         looser.send(new byte[] {0x2a, 0x66, 0x1, reason});
 

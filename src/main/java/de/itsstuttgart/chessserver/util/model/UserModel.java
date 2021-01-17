@@ -9,7 +9,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * created by paul on 15.01.21 at 20:08
@@ -30,6 +32,7 @@ public class UserModel {
     private int draws;
 
     private String theme;
+    private List<HistoryGame> pastGames = new ArrayList<>();
 
     public UserModel() {
     }
@@ -57,8 +60,7 @@ public class UserModel {
         this.hash = hash;
     }
 
-    public UserModel(String id, String username, byte[] salt, byte[] hash, int wins, int looses, int draws, String theme) {
-        this.id = id;
+    public UserModel(String username, byte[] salt, byte[] hash, int wins, int looses, int draws, String theme, List<HistoryGame> pastGames) {
         this.username = username;
         this.salt = salt;
         this.hash = hash;
@@ -66,6 +68,7 @@ public class UserModel {
         this.looses = looses;
         this.draws = draws;
         this.theme = theme;
+        this.pastGames = pastGames;
     }
 
     public boolean checkPassword(String password) {
@@ -136,5 +139,13 @@ public class UserModel {
 
     public void setTheme(String theme) {
         this.theme = theme;
+    }
+
+    public List<HistoryGame> getPastGames() {
+        return pastGames;
+    }
+
+    public void setPastGames(List<HistoryGame> pastGames) {
+        this.pastGames = pastGames;
     }
 }

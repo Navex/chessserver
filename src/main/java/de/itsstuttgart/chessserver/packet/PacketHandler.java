@@ -23,6 +23,7 @@ public class PacketHandler {
         this.processablePackets.add(new ChallengePacket());
         this.processablePackets.add(new ChallengeResponsePacket());
         this.processablePackets.add(new SetThemePacket());
+        this.processablePackets.add(new DashboardRequestPacket());
 
         // Board Packets
         this.processablePackets.add(new BoardMovePacket());

@@ -22,15 +22,17 @@ public class BoardFinishPacket implements Packet {
 
         ChessMatch match = client.getServer().findMatchByIdentifier(matchIdentifier);
         byte reason = data[16];
+        String fen = ByteUtils.readString(data, 19, ByteUtils.readShort(data, 17));
+        System.out.println(fen);
         if (match != null) {
             switch (reason) {
                 case 0x0: // resignation
                 case 0x1: // checkmate
-                    match.finish(match.getOpponent(client), reason);
+                    match.finish(match.getOpponent(client), reason, fen);
                     break;
                 case 0x2: // stalemate
                 case 0x3: // accepted draw offer
-                    match.finish(null, reason);
+                    match.finish(null, reason, fen);
                     break;
             }
         }
